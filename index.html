@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CampusFind — Lost & Found Portal</title>
+    <!-- Project: INT335 Campus Lost & Found Prototype -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --bg-light: #f8fafc;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --lost-bg: #fee2e2;
+            --lost-text: #dc2626;
+            --found-bg: #dcfce7;
+            --found-text: #16a34a;
+            --claimed-bg: #fef3c7;
+            --claimed-text: #d97706;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Navigation Bar */
+        header {
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .nav-container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo span {
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 6px;
+            transition: 0.2s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .nav-cta {
+            background: var(--primary);
+            color: white !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--primary-dark) !important;
+        }
+
+        /* Main Container & Sections */
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+            padding: 25px 20px;
+        }
+
+        .page-section {
+            display: none;
+            animation: fadeIn 0.25s ease-in-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 1. HOME PAGE & HERO */
+        .hero-box {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: white;
+            padding: 50px 30px;
+            border-radius: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+        }
+
+        .hero-box h1 {
+            font-size: 34px;
+            margin-bottom: 12px;
+        }
+
+        .hero-box p {
+            font-size: 17px;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 25px;
+        }
+
+        .hero-search {
+            max-width: 550px;
+            margin: 0 auto 25px;
+            display: flex;
+            background: white;
+            padding: 6px;
+            border-radius: 8px;
+        }
+
+        .hero-search input {
+            flex: 1;
+            border: none;
+            padding: 10px 14px;
+            font-size: 15px;
+            outline: none;
+            color: var(--text-dark);
+        }
+
+        .hero-search button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .hero-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-outline-white {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Stats Row */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 2. LOST & FOUND BOARD & FILTERS */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .filter-bar {
+            background: white;
+            padding: 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-bar {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .filter-bar input, .filter-bar select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        /* Items Grid */
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-lost { background: var(--lost-bg); color: var(--lost-text); }
+        .badge-found { background: var(--found-bg); color: var(--found-text); }
+        .badge-claimed { background: var(--claimed-bg); color: var(--claimed-text); }
+
+        .category-tag {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .item-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-dark);
+        }
+
+        .item-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .item-meta {
+            font-size: 13px;
+            color: var(--text-dark);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 3. REPORT FORM */
+        .form-card {
+            max-width: 650px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .type-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .toggle-btn {
+            padding: 12px;
+            text-align: center;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            background: white;
+            color: var(--text-muted);
+        }
+
+        .toggle-btn.active-lost {
+            border-color: var(--lost-text);
+            background: var(--lost-bg);
+            color: var(--lost-text);
+        }
+
+        .toggle-btn.active-found {
+            border-color: var(--found-text);
+            background: var(--found-bg);
+            color: var(--found-text);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* 4. CLAIM & STATUS SECTION */
+        .status-box {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .claim-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 15px;
+            background: #fcfdff;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 0 auto 6px;
+        }
+
+        .step.done .step-circle {
+            background: var(--primary);
+        }
+
+        .step-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        /* Modal for Claiming */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 460px;
+            width: 100%;
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 50px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <header>
+        <div class="nav-container">
+            <a href="#" class="logo" onclick="showSection('home')">
+                🔍 CampusFind <span>| Lost & Found</span>
+            </a>
+            <ul class="nav-links">
+                <li><button class="nav-btn active" id="nav-home" onclick="showSection('home')">1. Home</button></li>
+                <li><button class="nav-btn" id="nav-board" onclick="showSection('board')">2. Lost & Found Board</button></li>
+                <li><button class="nav-btn nav-cta" id="nav-report" onclick="showSection('report')">+ Report Item</button></li>
+                <li><button class="nav-btn" id="nav-status" onclick="showSection('status')">4. Claim Status</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ================= 1. HOME PAGE ================= -->
+        <section id="sec-home" class="page-section active">
+            <div class="hero-box">
+                <h1>Lost Something on Campus?</h1>
+                <p>Connect with fellow students to report lost belongings or return found items across campus blocks, libraries, and hostels.</p>
+                
+                <div class="hero-search">
+                    <input type="text" id="home-search-input" placeholder="Search for ID card, earbuds, keys, calculator...">
+                    <button onclick="quickSearchFromHome()">Search</button>
+                </div>
+
+                <div class="hero-actions">
+                    <button class="btn btn-white" onclick="openReportWithType('Lost')">📢 Report Lost Item</button>
+                    <button class="btn btn-outline-white" onclick="openReportWithType('Found')">🤝 Report Found Item</button>
+                </div>
+            </div>
+
+            <!-- Live Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="stat-total">0</h3>
+                    <p>Active Reports on Campus</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-lost">0</h3>
+                    <p>Lost Items Reported</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-found">0</h3>
+                    <p>Found Items Waiting</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="stat-claimed">0</h3>
+                    <p>Claims in Verification</p>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h2>Recent Campus Reports</h2>
+                <button class="btn btn-primary" onclick="showSection('board')">View Full Board →</button>
+            </div>
+            <div id="recent-items-grid" class="items-grid"></div>
+        </section>
+
+        <!-- ================= 2. LOST & FOUND BOARD ================= -->
+        <section id="sec-board" class="page-section">
+            <div class="section-header">
+                <div>
+                    <h2>Campus Lost & Found Board</h2>
+                    <p style="color: var(--text-muted); font-size: 14px;">Browse and filter items reported across the university campus.</p>
+                </div>
+                <button class="btn btn-primary" onclick="showSection('report')">+ Submit New Item</button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" id="filter-search" placeholder="Search by item name or description..." oninput="renderBoard()">
+                <select id="filter-type" onchange="renderBoard()">
+                    <option value="All">All Types (Lost & Found)</option>
+                    <option value="Lost">Lost Only</option>
+                    <option value="Found">Found Only</option>
+                </select>
+                <select id="filter-category" onchange="renderBoard()">
+                    <option value="All">All Categories</option>
+                    <option value="ID & Cards">ID & Cards</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Books & Notes">Books & Notes</option>
+                    <option value="Keys & Wallets">Keys & Wallets</option>
+                    <option value="Accessories">Accessories / Bottles</option>
+                </select>
+                <select id="filter-location" onchange="renderBoard()">
+                    <option value="All">All Campus Locations</option>
+                    <option value="Central Library">Central Library</option>
+                    <option value="Block 32 (CSE Labs)">Block 32 (CSE Labs)</option>
+                    <option value="Uni Mall / Food Court">Uni Mall / Food Court</option>
+                    <option value="Block 14 Lecture Halls">Block 14 Lecture Halls</option>
+                    <option value="Hostel & Mess Area">Hostel & Mess Area</option>
+                    <option value="Main Auditorium">Main Auditorium</option>
+                </select>
+                <button class="btn" style="background:#e2e8f0;" onclick="resetFilters()">Reset</button>
+            </div>
+
+            <div id="board-items-grid" class="items-grid"></div>
+        </section>
+
+        <!-- ================= 3. REPORT FORM ================= -->
+        <section id="sec-report" class="page-section">
+            <div class="form-card">
+                <h2 style="margin-bottom: 6px;">Report an Item</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Fill out the details below to list an item on the CampusFind board.</p>
+
+                <form id="report-form" onsubmit="submitReport(event)">
+                    <div class="type-toggle">
+                        <div id="toggle-lost" class="toggle-btn active-lost" onclick="setReportType('Lost')">🔴 I Lost Something</div>
+                        <div id="toggle-found" class="toggle-btn" onclick="setReportType('Found')">🟢 I Found Something</div>
+                    </div>
+                    <input type="hidden" id="item-type" value="Lost">
+
+                    <div class="form-group">
+                        <label>Item Title *</label>
+                        <input type="text" id="item-title" required placeholder="e.g., Black Casio Scientific Calculator, Student ID Card">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="item-category" required>
+                                <option value="ID & Cards">ID & Cards</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Books & Notes">Books & Notes</option>
+                                <option value="Keys & Wallets">Keys & Wallets</option>
+                                <option value="Accessories">Accessories / Bottles</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Campus Location *</label>
+                            <select id="item-location" required>
+                                <option value="Central Library">Central Library</option>
+                                <option value="Block 32 (CSE Labs)">Block 32 (CSE Labs)</option>
+                                <option value="Uni Mall / Food Court">Uni Mall / Food Court</option>
+                                <option value="Block 14 Lecture Halls">Block 14 Lecture Halls</option>
+                                <option value="Hostel & Mess Area">Hostel & Mess Area</option>
+                                <option value="Main Auditorium">Main Auditorium</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date Lost / Found *</label>
+                            <input type="date" id="item-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Your Name / Reg No. *</label>
+                            <input type="text" id="item-reporter" required placeholder="e.g., Rahul (Reg: 1251xxxx)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Contact Details (Phone or Campus Email) *</label>
+                        <input type="text" id="item-contact" required placeholder="e.g., 98765XXXXX or Room 304 Block 32">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description & Identifying Marks *</label>
+                        <textarea id="item-desc" rows="3" required placeholder="Mention color, brand, stickers, or specific marks..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 13px; font-size: 16px;">Submit Report to Board</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ================= 4. CLAIM & STATUS TRACKER ================= -->
+        <section id="sec-status" class="page-section">
+            <div class="status-box">
+                <h2 style="margin-bottom: 6px;">Claim Requests & Verification Status</h2>
+                <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 22px;">
+                    Track items you have claimed or updated on CampusFind. (Simulated verification workflow for prototype demo).
+                </p>
+
+                <div id="claims-list"></div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ================= CLAIM MODAL ================= -->
+    <div id="claim-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-item-name" style="margin-bottom: 8px;">Claim Item</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 16px;">
+                Submit your student details and proof of ownership/finding to initiate item handover.
+            </p>
+            <form onsubmit="confirmClaim(event)">
+                <input type="hidden" id="claim-item-id">
+                <div class="form-group">
+                    <label>Your Name & Registration No. *</label>
+                    <input type="text" id="claimant-name" required placeholder="e.g., Ayushi (Reg: 12515555)">
+                </div>
+                <div class="form-group">
+                    <label>Proof of Ownership / Handover Note *</label>
+                    <textarea id="claim-proof" rows="3" required placeholder="Describe a unique mark, wallpaper, or where we can meet on campus..."></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px;">
+                    <button type="button" class="btn" style="background:#e2e8f0;" onclick="closeClaimModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Claim Request</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p><strong>CampusFind — Lost & Found</strong> | Student Prototype Project (INT335) | Data saved locally in browser</p>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Pre-loaded realistic campus demo items
+        const defaultItems = [
+            {
+                id: "ITM-101",
+                type: "Lost",
+                title: "Blue Lanyard Student ID Card",
+                category: "ID & Cards",
+                location: "Block 32 (CSE Labs)",
+                date: "2026-10-20",
+                reporter: "Rohan Sharma (CSE)",
+                contact: "98123-45670",
+                desc: "Lost my university ID card near Lab 304 during morning practicals. Has a blue holder.",
+                status: "Open"
+            },
+            {
+                id: "ITM-102",
+                type: "Found",
+                title: "Black Realme Wireless Earbuds",
+                category: "Electronics",
+                location: "Central Library",
+                date: "2026-10-21",
+                reporter: "Simran Kaur",
+                contact: "Library Helpdesk / 99887-11223",
+                desc: "Found on the 2nd floor reading table near the reference section. Charging case has a small white sticker.",
+                status: "Open"
+            },
+            {
+                id: "ITM-103",
+                type: "Found",
+                title: "Casio fx-991EX Scientific Calculator",
+                category: "Electronics",
+                location: "Block 14 Lecture Halls",
+                date: "2026-10-19",
+                reporter: "Aman Verma",
+                contact: "88776-55443",
+                desc: "Left behind on the third-row desk in Room 202 after the Engineering Math lecture.",
+                status: "Open"
+            },
+            {
+                id: "ITM-104",
+                type: "Lost",
+                title: "Data Structures Handwritten Notebook",
+                category: "Books & Notes",
+                location: "Uni Mall / Food Court",
+                date: "2026-10-21",
+                reporter: "Priya Nair",
+                contact: "91234-09876",
+                desc: "Spiral register with complete DSA notes and unit test preparation sheets. Name written on first page.",
+                status: "Open"
+            },
+            {
+                id: "ITM-105",
+                type: "Found",
+                title: "Hostel Room Key with Marvel Keychain",
+                category: "Keys & Wallets",
+                location: "Hostel & Mess Area",
+                date: "2026-10-20",
+                reporter: "Vikramjeet",
+                contact: "BH-4 Security Desk",
+                desc: "Found near the badminton court walkway. Has two keys and a red keychain.",
+                status: "Claimed"
+            },
+            {
+                id: "ITM-106",
+                type: "Lost",
+                title: "Silver Milton Thermosteel Water Bottle",
+                category: "Accessories",
+                location: "Main Auditorium",
+                date: "2026-10-18",
+                reporter: "Neha Gupta",
+                contact: "97654-32109",
+                desc: "500ml silver bottle left near seat row G during the hackathon orientation session.",
+                status: "Open"
+            }
+        ];
+
+        const defaultClaims = [
+            {
+                claimId: "CLM-8821",
+                itemId: "ITM-105",
+                itemTitle: "Hostel Room Key with Marvel Keychain",
+                claimant: "Karan Mehta (Reg: 12514890)",
+                proof: "Room number 412 engraved on the back of the main key.",
+                step: 2 // 1: Received, 2: Under Review, 3: Returned
+            }
+        ];
+
+        // Load data from localStorage or set defaults
+        let items = JSON.parse(localStorage.getItem("campusFind_items")) || defaultItems;
+        let claims = JSON.parse(localStorage.getItem("campusFind_claims")) || defaultClaims;
+
+        function saveData() {
+            localStorage.setItem("campusFind_items", JSON.stringify(items));
+            localStorage.setItem("campusFind_claims", JSON.stringify(claims));
+        }
+
+        // Switch navigation sections
+        function showSection(secName) {
+            document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById('sec-' + secName).classList.add('active');
+            document.getElementById('nav-' + secName).classList.add('active');
+            window.scrollTo(0, 0);
+
+            if (secName === 'home') renderHome();
+            if (secName === 'board') renderBoard();
+            if (secName === 'status') renderClaims();
+        }
+
+        // Create HTML for an item card
+        function createItemCardHTML(item) {
+            const badgeClass = item.status === 'Claimed' ? 'badge-claimed' : (item.type === 'Lost' ? 'badge-lost' : 'badge-found');
+            const badgeLabel = item.status === 'Claimed' ? 'Claim in Progress' : item.type;
+
+            const actionBtn = item.status === 'Claimed'
+                ? `<button class="btn" style="background:#f1f5f9; color:#64748b; padding:8px 14px; font-size:13px;" onclick="showSection('status')">View Status</button>`
+                : `<button class="btn btn-primary" style="padding:8px 14px; font-size:13px;" onclick="openClaimModal('${item.id}')">
+                    ${item.type === 'Lost' ? 'I Found This' : 'Claim Item'}
+                   </button>`;
+
+            return `
+                <div class="item-card">
+                    <div>
+                        <div class="card-top">
+                            <span class="badge ${badgeClass}">${badgeLabel}</span>
+                            <span class="category-tag">${item.category}</span>
+                        </div>
+                        <div class="item-title">${item.title}</div>
+                        <p class="item-desc">${item.desc}</p>
+                    </div>
+                    <div>
+                        <div class="item-meta">
+                            <span>📍 <strong>Location:</strong> ${item.location}</span>
+                            <span>📅 <strong>Date:</strong> ${item.date}</span>
+                            <span>👤 <strong>Reported by:</strong> ${item.reporter}</span>
+                        </div>
+                        <div class="card-footer">
+                            <span style="font-size:12px; color:var(--text-muted);">📞 ${item.contact}</span>
+                            ${actionBtn}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Home Page Stats and Recent Items
+        function renderHome() {
+            document.getElementById('stat-total').innerText = items.length;
+            document.getElementById('stat-lost').innerText = items.filter(i => i.type === 'Lost').length;
+            document.getElementById('stat-found').innerText = items.filter(i => i.type === 'Found').length;
+            document.getElementById('stat-claimed').innerText = claims.length;
+
+            const recentGrid = document.getElementById('recent-items-grid');
+            recentGrid.innerHTML = items.slice(0, 3).map(createItemCardHTML).join('');
+        }
+
+        // Search from Home Hero Bar
+        function quickSearchFromHome() {
+            const query = document.getElementById('home-search-input').value;
+            document.getElementById('filter-search').value = query;
+            showSection('board');
+        }
+
+        // Render Lost & Found Board with Filters
+        function renderBoard() {
+            const search = document.getElementById('filter-search').value.toLowerCase();
+            const type = document.getElementById('filter-type').value;
+            const category = document.getElementById('filter-category').value;
+            const location = document.getElementById('filter-location').value;
+
+            const filtered = items.filter(item => {
+                const matchSearch = item.title.toLowerCase().includes(search) || item.desc.toLowerCase().includes(search);
+                const matchType = type === 'All' || item.type === type;
+                const matchCat = category === 'All' || item.category === category;
+                const matchLoc = location === 'All' || item.location === location;
+                return matchSearch && matchType && matchCat && matchLoc;
+            });
+
+            const boardGrid = document.getElementById('board-items-grid');
+            if (filtered.length === 0) {
+                boardGrid.innerHTML = `<p style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted);">No matching items found. Try clearing filters.</p>`;
+            } else {
+                boardGrid.innerHTML = filtered.map(createItemCardHTML).join('');
+            }
+        }
+
+        function resetFilters() {
+            document.getElementById('filter-search').value = '';
+            document.getElementById('filter-type').value = 'All';
+            document.getElementById('filter-category').value = 'All';
+            document.getElementById('filter-location').value = 'All';
+            renderBoard();
+        }
+
+        // Report Form Type Toggle
+        function setReportType(type) {
+            document.getElementById('item-type').value = type;
+            const lostBtn = document.getElementById('toggle-lost');
+            const foundBtn = document.getElementById('toggle-found');
+
+            if (type === 'Lost') {
+                lostBtn.className = 'toggle-btn active-lost';
+                foundBtn.className = 'toggle-btn';
+            } else {
+                foundBtn.className = 'toggle-btn active-found';
+                lostBtn.className = 'toggle-btn';
+            }
+        }
+
+        function openReportWithType(type) {
+            setReportType(type);
+            showSection('report');
+        }
+
+        // Handle New Item Submission
+        function submitReport(e) {
+            e.preventDefault();
+            const newItem = {
+                id: "ITM-" + Math.floor(100 + Math.random() * 900),
+                type: document.getElementById('item-type').value,
+                title: document.getElementById('item-title').value,
+                category: document.getElementById('item-category').value,
+                location: document.getElementById('item-location').value,
+                date: document.getElementById('item-date').value,
+                reporter: document.getElementById('item-reporter').value,
+                contact: document.getElementById('item-contact').value,
+                desc: document.getElementById('item-desc').value,
+                status: "Open"
+            };
+
+            items.unshift(newItem);
+            saveData();
+            document.getElementById('report-form').reset();
+            document.getElementById('item-date').valueAsDate = new Date();
+            alert("Report submitted successfully to CampusFind Board!");
+            showSection('board');
+        }
+
+        // Claim Modal Functions
+        function openClaimModal(itemId) {
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+            document.getElementById('claim-item-id').value = item.id;
+            document.getElementById('modal-item-name').innerText = (item.type === 'Lost' ? 'Report Found: ' : 'Claim Item: ') + item.title;
+            document.getElementById('claim-modal').classList.add('open');
+        }
+
+        function closeClaimModal() {
+            document.getElementById('claim-modal').classList.remove('open');
+        }
+
+        function confirmClaim(e) {
+            e.preventDefault();
+            const itemId = document.getElementById('claim-item-id').value;
+            const item = items.find(i => i.id === itemId);
+            if (!item) return;
+
+            item.status = "Claimed";
+
+            const newClaim = {
+                claimId: "CLM-" + Math.floor(1000 + Math.random() * 9000),
+                itemId: item.id,
+                itemTitle: item.title,
+                claimant: document.getElementById('claimant-name').value,
+                proof: document.getElementById('claim-proof').value,
+                step: 2
+            };
+
+            claims.unshift(newClaim);
+            saveData();
+            closeClaimModal();
+            showSection('status');
+        }
+
+        // Render Claim & Status Tracker
+        function renderClaims() {
+            const list = document.getElementById('claims-list');
+            if (claims.length === 0) {
+                list.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">No claim requests submitted yet.</p>`;
+                return;
+            }
+
+            list.innerHTML = claims.map((c, index) => `
+                <div class="claim-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-weight:700; color:var(--primary); font-size:14px;">Ref ID: ${c.claimId}</span>
+                        <button class="btn" style="padding:4px 10px; font-size:12px; background:#eff6ff; color:var(--primary);" onclick="advanceClaimStep(${index})">
+                            ${c.step < 3 ? '✓ Mark as Returned (Demo)' : '🎉 Completed'}
+                        </button>
+                    </div>
+                    <h4 style="margin-bottom:4px;">${c.itemTitle}</h4>
+                    <p style="font-size:13px; color:var(--text-muted);"><strong>Claimed By:</strong> ${c.claimant}</p>
+                    <p style="font-size:13px; color:var(--text-muted);"><strong>Verification Proof:</strong> "${c.proof}"</p>
+
+                    <div class="timeline">
+                        <div class="step done">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">Claim Received</div>
+                        </div>
+                        <div class="step ${c.step >= 2 ? 'done' : ''}">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">Under Review</div>
+                        </div>
+                        <div class="step ${c.step >= 3 ? 'done' : ''}">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">Item Returned</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Interactive demo button for teacher presentation
+        function advanceClaimStep(index) {
+            if (claims[index].step < 3) {
+                claims[index].step = 3;
+                saveData();
+                renderClaims();
+            }
+        }
+
+        // Initialize Default Date and Render Home
+        document.getElementById('item-date').valueAsDate = new Date();
+        saveData();
+        renderHome();
+    </script>
+</body>
+</html>
